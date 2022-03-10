@@ -121,4 +121,16 @@ public class StockService {
 		.setScale(2, RoundingMode.HALF_UP).doubleValue();
 	}
 
+	/**
+	 * 
+	 * @param stockSymbol
+	 * @param price
+	 * @return
+	 * @throws StockException
+	 */
+	public Double calculatePERatio(String stockSymbol, Double price) throws StockException {
+		return new BigDecimal(price/calculateDividendYield(stockSymbol, price))
+		.setScale(2, RoundingMode.HALF_UP).doubleValue();
+	}
+
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.interviews.stocks.jpmc.exception.StockException;
 import com.interviews.stocks.jpmc.model.DividendYield;
 import com.interviews.stocks.jpmc.model.GeometricMean;
+import com.interviews.stocks.jpmc.model.PERatio;
 import com.interviews.stocks.jpmc.model.Trade;
 import com.interviews.stocks.jpmc.model.VolumneWeightedStockPrice;
 import com.interviews.stocks.jpmc.service.StockService;
@@ -33,6 +34,15 @@ public class StockController {
 		DividendYield response = new DividendYield();
 		response.setDividendYield(stockService.calculateDividendYield(stockSymbol, price));
 		return new ResponseEntity<DividendYield>(response,HttpStatus.OK);
+	}
+	
+	@GetMapping("/api/stocks/{stockSymbol}/peratio")
+	public ResponseEntity<PERatio> calculatePeRatio(
+			@PathVariable(name="stockSymbol", required=true)   String stockSymbol,
+			@RequestParam(name="price",required=true) Double price) throws StockException {
+		PERatio response = new PERatio();
+		response.setPeRatio(stockService.calculatePERatio(stockSymbol, price));
+		return new ResponseEntity<PERatio>(response,HttpStatus.OK);
 	}
 	
 	@PostMapping("/api/stocks/{stockSymbol}/trade")

@@ -47,6 +47,14 @@ public class StockControllerTest {
 	}
 	
 	@Test
+	public void calculatePEratioIs2XX_onrightparameters() throws Exception {
+		mockMvc.perform(get
+				("/api/stocks/{stockSymbol}/peratio","TEA")
+						.param("price", "12.00"))
+				.andExpect(status().is2xxSuccessful());
+	}
+	
+	@Test
 	public void verifyDividendYieldAPIIs4XX_onmissingrequestparams() throws Exception {
 		mockMvc.perform(get
 				("/api/stocks/{stockSymbol}/dividendyield","TEA"))
@@ -54,9 +62,23 @@ public class StockControllerTest {
 	}
 	
 	@Test
+	public void calculaPeRatioAPIIs4XX_onmissingrequestparams() throws Exception {
+		mockMvc.perform(get
+				("/api/stocks/{stockSymbol}/peratio","TEA"))
+				.andExpect(status().isBadRequest());
+	}
+	
+	@Test
 	public void verifyDividendYieldAPIIs4XX_onmissingpathparams() throws Exception {
 		mockMvc.perform(get
 				("/api/stocks/{stockSymbol}/dividendyield",""))
+				.andExpect(status().isNotFound());
+	}
+	
+	@Test
+	public void calculatePeratioAPIIs4XX_onmissingpathparams() throws Exception {
+		mockMvc.perform(get
+				("/api/stocks/{stockSymbol}/peratio",""))
 				.andExpect(status().isNotFound());
 	}
 	
@@ -74,6 +96,19 @@ public class StockControllerTest {
 	}
 	
 	@Test
+	public void calculatePeratio() throws Exception {
+		when(stockService.calculatePERatio(anyString(), anyDouble()))
+			.thenReturn(0.32d);
+		mockMvc.perform(get
+				("/api/stocks/{stockSymbol}/peratio","TEA")
+				.param("price", "70.99"))
+				.andExpect(status().isOk())
+				.andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_VALUE))
+				.andExpect(jsonPath("$.peRatio", is(0.32d)));
+		verify(stockService).calculatePERatio(anyString(),anyDouble());
+	}
+	
+	@Test
 	public void verifyDividendYieldThrowsException() throws Exception {
 		when(stockService.calculateDividendYield(anyString(), anyDouble()))
 			.thenThrow(new StockException("No Stocks Found"));
@@ -85,6 +120,17 @@ public class StockControllerTest {
 		verify(stockService).calculateDividendYield(anyString(),anyDouble());
 	}
 	
+	@Test
+	public void calculatePeRatioThrowsException() throws Exception {
+		when(stockService.calculatePERatio(anyString(), anyDouble()))
+			.thenThrow(new StockException("No Stocks Found"));
+		mockMvc.perform(get
+				("/api/stocks/{stockSymbol}/peratio","TEA")
+				.param("price", "70.99"))
+				.andExpect(status().isNotFound());
+				
+		verify(stockService).calculatePERatio(anyString(),anyDouble());
+	}
 	
 	@Test
 	public void saveTradeIs2xx() throws Exception {

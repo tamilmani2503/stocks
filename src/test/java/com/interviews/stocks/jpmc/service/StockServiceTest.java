@@ -29,15 +29,36 @@ public class StockServiceTest {
 	}
 	
 	@Test
+	public void calculatePeRatioCommonType() throws Exception {
+		Double peRatio = stockService.calculatePERatio("TEA", 70.99);
+		assertEquals(253.54, peRatio);
+	}
+	
+	@Test
 	public void calculateDividendYieldPreferredType() throws Exception {
 		Double dividendYield = stockService.calculateDividendYield("POP", 70.99);
 		assertEquals(0.04, dividendYield);
 	}
 	
 	@Test
+	public void calculatePeRatioPrefferedType() throws Exception {
+		Double peRatio = stockService.calculatePERatio("POP", 70.99);
+		assertEquals(1774.75, peRatio);
+	}
+	
+	@Test
 	public void calculateDividendYiedThrowsException() throws Exception {
 		StockException exception = assertThrows(StockException.class,
 				() -> stockService.calculateDividendYield("AAA", 90.00),
+				"No Stocks Found"
+				);
+		assertTrue(exception.getMessage().contains("No Stocks Found"));
+	}
+	
+	@Test
+	public void calculatePeRatioThrowsException() throws Exception {
+		StockException exception = assertThrows(StockException.class,
+				() -> stockService.calculatePERatio("AAA", 90.00),
 				"No Stocks Found"
 				);
 		assertTrue(exception.getMessage().contains("No Stocks Found"));
